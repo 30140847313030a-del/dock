@@ -5,20 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>夏日刮刮樂</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     min-height: 100vh;
-    background:
-      radial-gradient(circle at top left, rgba(255,255,255,0.7), transparent 30%),
-      linear-gradient(180deg, #87d8ff 0%, #b8ecff 34%, #fff4d6 72%, #ffe8b6 100%);
     color: #17304d;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     padding: 2rem 1rem;
+    background:
+      radial-gradient(circle at 14% 10%, rgba(255, 255, 255, 0.85), transparent 28%),
+      radial-gradient(circle at 84% 18%, rgba(255, 220, 115, 0.65), transparent 22%),
+      linear-gradient(180deg, #7ed7ff 0%, #b8edff 36%, #fff4d6 72%, #ffe0a6 100%);
+    overflow-x: hidden;
   }
 
   #game {
@@ -31,9 +38,24 @@
     margin-bottom: 1.25rem;
   }
 
+  .summer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.72);
+    color: #e67e22;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 16px rgba(32, 95, 128, 0.08);
+  }
+
   .header h1 {
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 800;
     color: #0f4c75;
     margin-bottom: 8px;
     letter-spacing: 1px;
@@ -42,29 +64,16 @@
   .header p {
     font-size: 14px;
     color: #35627d;
-  }
-
-  .summer-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.7);
-    color: #e67e22;
-    border: 1px solid rgba(255,255,255,0.7);
-    border-radius: 999px;
-    padding: 8px 14px;
-    font-size: 13px;
-    margin-bottom: 12px;
-    backdrop-filter: blur(6px);
+    line-height: 1.6;
   }
 
   .card {
-    background: rgba(255,255,255,0.82);
-    border: 1px solid rgba(255,255,255,0.75);
-    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 12px 30px rgba(32, 95, 128, 0.14);
-    backdrop-filter: blur(8px);
+    box-shadow: 0 16px 36px rgba(32, 95, 128, 0.16);
+    backdrop-filter: blur(10px);
   }
 
   .card-header {
@@ -77,15 +86,15 @@
 
   .card-header span {
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     color: #6a4300;
-    letter-spacing: .04em;
+    letter-spacing: .05em;
   }
 
   .card-header small {
     font-size: 12px;
     color: #6a4300;
-    opacity: .8;
+    opacity: .82;
   }
 
   .inner {
@@ -100,12 +109,17 @@
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    border-radius: 20px;
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+    background: #fff;
+    box-shadow:
+      inset 0 0 0 1px rgba(0, 0, 0, 0.05),
+      0 12px 28px rgba(15, 76, 117, 0.12);
   }
 
   .scratch-under {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     display: flex;
@@ -114,40 +128,50 @@
     justify-content: center;
   }
 
-  .scratch-under .prize-letter {
-    font-size: 78px;
-    font-weight: 800;
+  .prize-label {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: .75;
+    margin-bottom: 10px;
+  }
+
+  .prize-letter {
+    font-size: 82px;
+    font-weight: 900;
     line-height: 1;
+    letter-spacing: 1px;
   }
 
-  .scratch-under .prize-rarity {
+  .prize-rarity {
     font-size: 15px;
-    margin-top: 10px;
-    opacity: .78;
+    font-weight: 700;
+    margin-top: 12px;
+    opacity: .82;
   }
 
-  .scratch-under .prize-note {
+  .prize-note {
     font-size: 13px;
     margin-top: 8px;
     opacity: .68;
   }
 
-  canvas {
+  canvas.scratch-canvas {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     cursor: crosshair;
     touch-action: none;
+    user-select: none;
   }
 
   .reveal-box {
     border-radius: 18px;
-    background: rgba(255,255,255,0.75);
-    border: 1px solid rgba(0,0,0,0.06);
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     padding: 18px;
     text-align: center;
-    min-height: 110px;
+    min-height: 112px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,19 +185,21 @@
 
   .result-title {
     font-size: 14px;
+    font-weight: 600;
     margin-bottom: 6px;
   }
 
   .result-value {
-    font-size: 52px;
-    font-weight: 800;
+    font-size: 54px;
+    font-weight: 900;
     line-height: 1;
   }
 
   .result-rarity {
     font-size: 13px;
-    margin-top: 6px;
-    opacity: .78;
+    font-weight: 700;
+    margin-top: 8px;
+    opacity: .8;
   }
 
   .tomorrow-note {
@@ -191,13 +217,52 @@
     line-height: 1.6;
   }
 
+  .scratch-dust {
+    position: absolute;
+    width: 6px;
+    height: 3px;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0.95;
+    animation: dust-fade 560ms ease-out forwards;
+  }
+
+  @keyframes dust-fade {
+    0% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+      opacity: 0.95;
+    }
+    100% {
+      transform: translate(var(--dx), var(--dy)) rotate(140deg) scale(0.42);
+      opacity: 0;
+    }
+  }
+
   @media (max-width: 480px) {
-    .header h1 { font-size: 24px; }
-    .scratch-under .prize-letter { font-size: 64px; }
-    .result-value { font-size: 44px; }
+    body {
+      padding: 1.5rem 1rem;
+    }
+
+    .header h1 {
+      font-size: 24px;
+    }
+
+    .prize-letter {
+      font-size: 68px;
+    }
+
+    .result-value {
+      font-size: 46px;
+    }
+
+    .inner {
+      padding: 1rem;
+    }
   }
 </style>
 </head>
+
 <body>
 <div id="game">
 
@@ -207,7 +272,7 @@
       <span>Summer Lucky Scratch</span>
     </div>
     <h1>夏日刮刮樂</h1>
-    <p>每天一次，看看今天的夏日幸運籤是什麼吧！</p>
+    <p>每天一次，刮開今天的夏日幸運籤！</p>
   </div>
 
   <div id="main-area">
@@ -220,6 +285,18 @@
 </div>
 
 <script>
+/* ── 物品設定 ─────────────────────────────────────────────
+   id      : 顯示文字
+   bg/fg   : 底色 / 文字色
+   rarity  : 稀有度標籤
+   lo/hi   : 對應的 z-score 區間
+
+   機率分佈：
+   a / g  各約 0.6%（極稀有）
+   b / f  各約 6.1%（稀有）
+   c / e  各約 24.2%（普通）
+   d      約 38.3%（常見）
+──────────────────────────────────────────────────────── */
 const ITEMS = [
   { id:'a', bg:'#d9d2ff', fg:'#3f2a8a', rarity:'極稀有', lo:-Infinity, hi:-2.5 },
   { id:'b', bg:'#ffc4a8', fg:'#7a2f14', rarity:'稀有',   lo:-2.5, hi:-1.5 },
@@ -230,8 +307,13 @@ const ITEMS = [
   { id:'g', bg:'#ffd0cb', fg:'#8a2e3d', rarity:'極稀有', lo:2.5,  hi:Infinity },
 ];
 
+/* ── 工具函式 ───────────────────────────────────────────── */
 function boxMuller() {
-  let u; do { u = Math.random(); } while (u < 1e-10);
+  let u;
+  do {
+    u = Math.random();
+  } while (u < 1e-10);
+
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * Math.random());
 }
 
@@ -241,27 +323,40 @@ function pickItem() {
 }
 
 function today() {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
+/* ── 每日限制：用 localStorage 儲存 ───────────────────── */
 function loadState() {
   try {
     const raw = localStorage.getItem('scratch_state');
     if (!raw) return null;
+
     const s = JSON.parse(raw);
     if (s.date === today()) return s;
   } catch(e) {}
+
   return null;
 }
 
 function saveState(itemId) {
   try {
-    localStorage.setItem('scratch_state', JSON.stringify({ date: today(), itemId }));
+    localStorage.setItem('scratch_state', JSON.stringify({
+      date: today(),
+      itemId: itemId,
+      playedAt: new Date().toISOString()
+    }));
   } catch(e) {}
 }
 
+/* ── 初始化 ─────────────────────────────────────────────── */
 function init() {
   const saved = loadState();
+
   if (saved) {
     const item = ITEMS.find(i => i.id === saved.itemId) || ITEMS[3];
     renderAlreadyScratched(item);
@@ -271,6 +366,7 @@ function init() {
   }
 }
 
+/* ── 畫面：今天尚未刮 ───────────────────────────────────── */
 function renderScratchCard(item) {
   document.getElementById('main-area').innerHTML = `
     <div class="card">
@@ -278,23 +374,28 @@ function renderScratchCard(item) {
         <span>今日刮刮樂</span>
         <small>刮開看看你的夏日幸運籤</small>
       </div>
+
       <div class="inner">
         <div class="scratch-wrap">
           <div class="scratch-card" id="scratch-card"></div>
         </div>
+
         <div class="reveal-box" id="prize-reveal">
           <span class="reveal-placeholder">
-            請刮開上方卡片<br>
+            用手指或滑鼠刮開上方銀色區域<br>
             看看你今天抽到什麼
           </span>
         </div>
+
         <div class="footer-tip">每人每日限玩一次</div>
       </div>
     </div>
   `;
+
   createSinglePanel(item, false);
 }
 
+/* ── 畫面：今天已刮過 ───────────────────────────────────── */
 function renderAlreadyScratched(item) {
   document.getElementById('main-area').innerHTML = `
     <div class="card">
@@ -302,10 +403,12 @@ function renderAlreadyScratched(item) {
         <span>今日刮刮樂</span>
         <small>今天已經玩過囉</small>
       </div>
+
       <div class="inner">
         <div class="scratch-wrap">
           <div class="scratch-card" id="scratch-card"></div>
         </div>
+
         <div class="reveal-box" style="background:${item.bg};">
           <div>
             <div class="result-title" style="color:${item.fg};">你今天刮到的是</div>
@@ -313,115 +416,302 @@ function renderAlreadyScratched(item) {
             <div class="result-rarity" style="color:${item.fg};">${item.rarity}</div>
           </div>
         </div>
+
         <div class="tomorrow-note">已記錄，明天再來刮一次 🌴</div>
       </div>
     </div>
   `;
+
   createSinglePanel(item, true);
 }
 
+/* ── 建立單一刮刮卡 ───────────────────────────────────── */
 let revealed = false;
 
 function createSinglePanel(item, preRevealed) {
   revealed = preRevealed;
+
   const box = document.getElementById('scratch-card');
   box.innerHTML = '';
 
   const under = document.createElement('div');
   under.className = 'scratch-under';
-  under.style.background = `linear-gradient(180deg, ${item.bg}, rgba(255,255,255,0.35)), ${item.bg}`;
+  under.style.background = `
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.68), transparent 28%),
+    linear-gradient(180deg, ${item.bg}, rgba(255,255,255,0.38)),
+    ${item.bg}
+  `;
+
   under.innerHTML = `
+    <div class="prize-label" style="color:${item.fg};">你的夏日幸運籤</div>
     <div class="prize-letter" style="color:${item.fg};">${item.id.toUpperCase()}</div>
     <div class="prize-rarity" style="color:${item.fg};">${item.rarity}</div>
     <div class="prize-note" style="color:${item.fg};">Summer Lucky!</div>
   `;
+
   box.appendChild(under);
 
   if (!preRevealed) {
     const cv = document.createElement('canvas');
+    cv.className = 'scratch-canvas';
     box.appendChild(cv);
     initScratch(cv, item);
   }
 }
 
+/* ── 刮刮樂動畫：更接近真實刮卡感 ───────────────────── */
 function initScratch(cv, item) {
   requestAnimationFrame(() => {
     const r = cv.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    cv.width = r.width * dpr;
-    cv.height = r.height * dpr;
-    const ctx = cv.getContext('2d');
+
+    cv.width = Math.round(r.width * dpr);
+    cv.height = Math.round(r.height * dpr);
+
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
     ctx.scale(dpr, dpr);
 
-    const W = r.width, H = r.height;
+    const W = r.width;
+    const H = r.height;
 
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, '#ffb76b');
-    grad.addColorStop(1, '#ff8f70');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.roundRect(0, 0, W, H, 20);
-    ctx.fill();
+    drawScratchSurface(ctx, W, H);
 
-    ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    for (let i = 0; i < 5; i++) {
-      ctx.beginPath();
-      ctx.arc(30 + i * 70, 30 + (i % 2) * 12, 18, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    let scratching = false;
+    let last = null;
+    let moveCount = 0;
 
-    ctx.fillStyle = '#fff7ef';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    ctx.font = '700 24px sans-serif';
-    ctx.fillText('刮開驚喜', W / 2, H / 2 - 16);
-
-    ctx.font = '14px sans-serif';
-    ctx.fillStyle = 'rgba(255,247,239,0.9)';
-    ctx.fillText('Scratch here', W / 2, H / 2 + 14);
-
-    let scratching = false, area = 0;
-    const total = W * H;
-
-    function pos(e) {
+    function getPoint(e) {
       const rr = cv.getBoundingClientRect();
-      if (e.touches) return { x: e.touches[0].clientX - rr.left, y: e.touches[0].clientY - rr.top };
-      return { x: e.clientX - rr.left, y: e.clientY - rr.top };
+      return {
+        x: e.clientX - rr.left,
+        y: e.clientY - rr.top
+      };
     }
 
-    function doScratch(e) {
-      if (!scratching) return;
+    function startScratch(e) {
       e.preventDefault();
-      const p = pos(e);
-      const rad = 26;
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
-      ctx.fill();
 
-      area += Math.PI * rad * rad;
+      scratching = true;
+      last = getPoint(e);
 
-      if (!revealed && area / total > 0.38) {
-        revealed = true;
-        onReveal(item);
+      if (cv.setPointerCapture) {
+        cv.setPointerCapture(e.pointerId);
+      }
+
+      scratchTo(ctx, last, last);
+      spawnScratchDust(cv, last.x, last.y);
+    }
+
+    function moveScratch(e) {
+      if (!scratching) return;
+
+      e.preventDefault();
+
+      const current = getPoint(e);
+      scratchTo(ctx, last, current);
+      spawnScratchDust(cv, current.x, current.y);
+
+      last = current;
+      moveCount++;
+
+      if (!revealed && moveCount % 6 === 0) {
+        const percent = getScratchedPercent(ctx, cv);
+
+        if (percent > 0.42) {
+          revealed = true;
+          onReveal(item);
+
+          cv.style.transition = 'opacity 520ms ease, filter 520ms ease';
+          cv.style.opacity = '0';
+          cv.style.filter = 'blur(0.5px)';
+          cv.style.pointerEvents = 'none';
+
+          setTimeout(() => {
+            if (cv && cv.parentElement) cv.remove();
+          }, 540);
+        }
       }
     }
 
-    cv.addEventListener('mousedown', e => { scratching = true; doScratch(e); });
-    cv.addEventListener('mousemove', doScratch);
-    cv.addEventListener('mouseup', () => scratching = false);
-    cv.addEventListener('mouseleave', () => scratching = false);
+    function endScratch(e) {
+      scratching = false;
+      last = null;
 
-    cv.addEventListener('touchstart', e => { scratching = true; doScratch(e); }, { passive: false });
-    cv.addEventListener('touchmove', doScratch, { passive: false });
-    cv.addEventListener('touchend', () => scratching = false);
+      if (cv.releasePointerCapture && e.pointerId !== undefined) {
+        cv.releasePointerCapture(e.pointerId);
+      }
+    }
+
+    cv.addEventListener('pointerdown', startScratch);
+    cv.addEventListener('pointermove', moveScratch);
+    cv.addEventListener('pointerup', endScratch);
+    cv.addEventListener('pointercancel', endScratch);
+    cv.addEventListener('pointerleave', endScratch);
   });
 }
 
+function scratchTo(ctx, from, to) {
+  if (!from || !to) return;
+
+  const distance = Math.hypot(to.x - from.x, to.y - from.y);
+  const brush = Math.max(24, Math.min(38, distance * 0.8));
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  if (distance < 2) {
+    ctx.beginPath();
+    ctx.arc(to.x, to.y, brush / 2, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.lineWidth = brush;
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.stroke();
+
+    ctx.lineWidth = brush * 0.52;
+    ctx.beginPath();
+    ctx.moveTo(from.x + 3, from.y - 2);
+    ctx.lineTo(to.x + 3, to.y - 2);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+/* ── 銀色刮刮膜表面 ───────────────────────────────────── */
+function drawScratchSurface(ctx, W, H) {
+  ctx.save();
+
+  const foil = ctx.createLinearGradient(0, 0, W, H);
+  foil.addColorStop(0, '#f9fbff');
+  foil.addColorStop(0.16, '#b8c2cc');
+  foil.addColorStop(0.34, '#eef2f6');
+  foil.addColorStop(0.52, '#9da8b4');
+  foil.addColorStop(0.72, '#f5f7fa');
+  foil.addColorStop(1, '#a8b2bd');
+
+  roundedRect(ctx, 0, 0, W, H, 22);
+  ctx.fillStyle = foil;
+  ctx.fill();
+
+  ctx.globalAlpha = 0.2;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1;
+
+  for (let x = -W; x < W * 2; x += 18) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x + W, H);
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = '#000000';
+
+  for (let i = 0; i < 1000; i++) {
+    const x = Math.random() * W;
+    const y = Math.random() * H;
+    const s = Math.random() * 1.35;
+    ctx.fillRect(x, y, s, s);
+  }
+
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = '#ffffff';
+
+  for (let i = 0; i < 24; i++) {
+    ctx.beginPath();
+    ctx.arc(
+      Math.random() * W,
+      Math.random() * H,
+      8 + Math.random() * 18,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.font = '800 26px sans-serif';
+  ctx.fillText('刮開驚喜', W / 2, H / 2 - 20);
+
+  ctx.font = '600 14px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.72)';
+  ctx.fillText('Scratch to reveal', W / 2, H / 2 + 18);
+
+  ctx.restore();
+}
+
+function roundedRect(ctx, x, y, w, h, r) {
+  if (ctx.roundRect) {
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    return;
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+}
+
+/* ── 計算實際刮開比例 ─────────────────────────────────── */
+function getScratchedPercent(ctx, cv) {
+  const pixels = ctx.getImageData(0, 0, cv.width, cv.height).data;
+  let transparent = 0;
+
+  for (let i = 3; i < pixels.length; i += 4) {
+    if (pixels[i] < 35) transparent++;
+  }
+
+  return transparent / (pixels.length / 4);
+}
+
+/* ── 刮屑效果 ─────────────────────────────────────────── */
+function spawnScratchDust(cv, x, y) {
+  const parent = cv.parentElement;
+  if (!parent) return;
+
+  for (let i = 0; i < 3; i++) {
+    const dust = document.createElement('span');
+    dust.className = 'scratch-dust';
+
+    const dx = (Math.random() - 0.5) * 46;
+    const dy = -8 - Math.random() * 30;
+
+    dust.style.left = `${x + (Math.random() - 0.5) * 14}px`;
+    dust.style.top = `${y + (Math.random() - 0.5) * 14}px`;
+    dust.style.background = Math.random() > 0.5 ? '#d7dde3' : '#f8fbff';
+    dust.style.setProperty('--dx', `${dx}px`);
+    dust.style.setProperty('--dy', `${dy}px`);
+
+    parent.appendChild(dust);
+
+    setTimeout(() => {
+      if (dust && dust.parentElement) dust.remove();
+    }, 580);
+  }
+}
+
+/* ── 揭曉獎項 ─────────────────────────────────────────── */
 function onReveal(item) {
   const area = document.getElementById('prize-reveal');
+
   area.style.background = item.bg;
+  area.style.borderColor = 'rgba(255,255,255,0.65)';
   area.innerHTML = `
     <div>
       <div class="result-title" style="color:${item.fg};">你刮到了</div>
@@ -430,11 +720,15 @@ function onReveal(item) {
     </div>
   `;
 
-  if (item.rarity === '極稀有') launchConfetti();
+  if (item.rarity === '極稀有') {
+    launchConfetti();
+  }
 
   saveState(item.id);
 
   setTimeout(() => {
+    if (document.querySelector('.tomorrow-note')) return;
+
     const note = document.createElement('div');
     note.className = 'tomorrow-note';
     note.textContent = '已記錄，明天再來刮一次 🌊';
@@ -442,6 +736,7 @@ function onReveal(item) {
   }, 800);
 }
 
+/* ── 彩帶特效：極稀有時觸發 ───────────────────────────── */
 function launchConfetti() {
   const cv = document.createElement('canvas');
   cv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;';
@@ -454,7 +749,8 @@ function launchConfetti() {
   const ctx = cv.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  const W = window.innerWidth, H = window.innerHeight;
+  const W = window.innerWidth;
+  const H = window.innerHeight;
 
   const pcs = Array.from({ length: 90 }, () => ({
     x: Math.random() * W,
@@ -462,18 +758,21 @@ function launchConfetti() {
     vx: (Math.random() - 0.5) * 3,
     vy: 2 + Math.random() * 3,
     size: 5 + Math.random() * 7,
-    color: ['#ffd36e','#ff9f80','#8be0ff','#bff3df','#d9d2ff'][Math.floor(Math.random() * 5)],
+    color: ['#ffd36e', '#ff9f80', '#8be0ff', '#bff3df', '#d9d2ff'][Math.floor(Math.random() * 5)],
     rot: Math.random() * 360,
     vr: (Math.random() - 0.5) * 8
   }));
 
   let f = 0;
-  (function animate() {
+
+  function animate() {
     ctx.clearRect(0, 0, W, H);
+
     pcs.forEach(p => {
       p.x += p.vx;
       p.y += p.vy;
       p.rot += p.vr;
+
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot * Math.PI / 180);
@@ -481,11 +780,18 @@ function launchConfetti() {
       ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
       ctx.restore();
     });
-    if (++f < 150) requestAnimationFrame(animate);
-    else cv.remove();
-  })();
+
+    if (++f < 150) {
+      requestAnimationFrame(animate);
+    } else {
+      cv.remove();
+    }
+  }
+
+  animate();
 }
 
+/* ── 啟動 ─────────────────────────────────────────────── */
 init();
 </script>
 </body>
